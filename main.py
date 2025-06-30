@@ -1,7 +1,7 @@
 import subprocess
 import os
 
-def print_help():
+def help():
     print("\nComandos disponíveis:")
     print("-" * 60)
     comandos = [
@@ -20,32 +20,33 @@ def print_help():
 
     for cmd, desc in comandos:
         print(f"{cmd:<15} - {desc}")
+    
     print("-" * 60)
 
 def mini_bash():
     while True:
         try:
             diretorio_atual = os.getcwd()
-            comando = input(f"{diretorio_atual} > ").strip()
+
+            os.write(1, f"{diretorio_atual} > ".encode())
+            comando = os.read(0, 1024).decode().strip()
 
             if comando == "":
                 continue
-
 
             if comando.lower() in ["exit", "sair"]:
                 break
 
             if comando == "help":
-                print_help()
+                help()
                 continue
-
  
             if comando.startswith("cd "):
                 novo_diretorio = comando[3:].strip()
                 try:
                     os.chdir(novo_diretorio)
                 except FileNotFoundError:
-                    print(f"Diretório inexistente: {novo_diretorio}")
+                    os.write(1, f"Diretorio inexistente: {novo_diretorio}\n".encode())
                 continue
 
 
@@ -53,17 +54,21 @@ def mini_bash():
                 try:
                     os.chdir("..")
                 except Exception as e:
-                    print(f"Erro ao voltar: {e}")
+                    os.write(1, f"Erro ao voltar: {e}\n".encode())
                 continue
 
             args = comando.split()
-            processo = subprocess.Popen(args)
+            processo = subprocess.Popen(args, shell=True)
             processo.wait()
+
         except KeyboardInterrupt:
-            print("\nUse 'exit' para sair.")
+            os.write(1, "\nUse 'exit' para sair.\n".encode())
+
         except FileNotFoundError:
-            print(f"Comando não encontrado: {comando.split()[0]}")
+            os.write(1, f"Comando nao encontrado: {comando.split()[0]}\n".encode())
+
         except Exception as e:
-            print(f"Erro: {e}")
+            os.write(1, f"Erro: {e}\n".encode())
+            
 if __name__ == "__main__":
     mini_bash()
