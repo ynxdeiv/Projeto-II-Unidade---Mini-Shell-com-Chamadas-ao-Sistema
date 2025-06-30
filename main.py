@@ -1,5 +1,6 @@
 import subprocess
 import os
+import platform
 
 def help():
     print("\nComandos disponíveis:")
@@ -22,6 +23,8 @@ def help():
         print(f"{cmd:<15} - {desc}")
     
     print("-" * 60)
+
+windows = platform.system() == "Windows"
 
 def mini_bash():
     while True:
@@ -56,6 +59,21 @@ def mini_bash():
                 except Exception as e:
                     os.write(1, f"Erro ao voltar: {e}\n".encode())
                 continue
+
+            if windows:
+                if comando == "ls":
+                    comando = "dir"
+                elif comando == "clear":
+                    comando = "cls"
+                elif comando.startswith("rm"):
+                    nome = comando[3:]
+                    comando = f"del {nome}"
+                elif comando.startswith("touch"):
+                    nome = comando[6:]
+                    comando = f"type null>{nome}"
+
+            subprocess.run(comando, shell=True)
+                
 
             args = comando.split()
             processo = subprocess.Popen(args, shell=True)
