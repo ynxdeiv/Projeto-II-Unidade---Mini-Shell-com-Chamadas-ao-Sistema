@@ -1,6 +1,4 @@
-Claro! Abaixo está um modelo de arquivo `README.md` completo e direto ao ponto, para descrever seu projeto de **Mini Bash**:
 
----
 
 ## 🐚 Mini Bash – Projeto II Unidade
 
